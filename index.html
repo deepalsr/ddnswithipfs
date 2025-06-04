@@ -34,7 +34,6 @@
 
   <section>
     <h2>All Domains</h2>
-    <button id="loadDomainsBtn">Load Domains</button>
     <table border="1" width="100%">
       <thead><tr><th>Domain</th><th>CID</th></tr></thead>
       <tbody id="domainsTable"></tbody>
@@ -42,20 +41,20 @@
   </section>
 
   <section>
-  <h2>Update Domain CID</h2>
-  <input type="text" id="updateDomainInput" placeholder="yourdomain.eth" />
-  <input type="text" id="newCidInput" placeholder="New CID" />
-  <button id="updateCidBtn">Update CID</button>
-  <p id="updateCidStatus"></p>
-</section>
+    <h2>Update Domain CID</h2>
+    <input type="text" id="updateDomainInput" placeholder="yourdomain.eth" />
+    <input type="text" id="newCidInput" placeholder="New CID" />
+    <button id="updateCidBtn">Update CID</button>
+    <p id="updateCidStatus"></p>
+  </section>
 
-<section>
-  <h2>Transfer Domain Ownership</h2>
-  <input type="text" id="transferDomainInput" placeholder="yourdomain.eth" />
-  <input type="text" id="newOwnerInput" placeholder="New Owner Address" />
-  <button id="transferDomainBtn">Transfer Ownership</button>
-  <p id="transferDomainStatus"></p>
-</section>
+  <section>
+    <h2>Transfer Domain Ownership</h2>
+    <input type="text" id="transferDomainInput" placeholder="yourdomain.eth" />
+    <input type="text" id="newOwnerInput" placeholder="New Owner Address" />
+    <button id="transferDomainBtn">Transfer Ownership</button>
+    <p id="transferDomainStatus"></p>
+  </section>
 
   <script src="./libs/ethers.umd.min.js"></script>
   <script type="module" src="./main.js"></script>

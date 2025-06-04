@@ -4,6 +4,7 @@ import { abi, contractAddress } from './contract.js';
 const { ethers } = window;
 
 let signer, contract;
+let domainList = [];
 
 // Your Pinata JWT token here
 const PINATA_JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIxZjhmYjExNy0wOWI0LTRmMjItODMzOS0zY2EwOTFhYzU5MzgiLCJlbWFpbCI6ImRlZXBhbHNocnRAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBpbl9wb2xpY3kiOnsicmVnaW9ucyI6W3siZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjEsImlkIjoiRlJBMSJ9LHsiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjEsImlkIjoiTllDMSJ9XSwidmVyc2lvbiI6MX0sIm1mYV9lbmFibGVkIjpmYWxzZSwic3RhdHVzIjoiQUNUSVZFIn0sImF1dGhlbnRpY2F0aW9uVHlwZSI6InNjb3BlZEtleSIsInNjb3BlZEtleUtleSI6ImVlMDUxYTVjNTQxODFiOTlmOTc0Iiwic2NvcGVkS2V5U2VjcmV0IjoiYTgwZDc5YWM5M2I5YzQzYTU4NzJjNTA5MjI4YmEyNmEzNmM2NDBhNTY2NjUwNWZiYzZjYjFjNDJiNWQzY2Q2YyIsImV4cCI6MTc4MDQ4ODIxM30.ZQfFomgkfxEbIdpVBbg2xaXjgeu3pgkbxhzGN8vYBOY";
@@ -19,6 +20,19 @@ document.getElementById('connectWallet').onclick = async () => {
   contract = new ethers.Contract(contractAddress, abi, signer);
   const address = await signer.getAddress();
   document.getElementById('walletAddress').innerText = 'Connected: ' + address;
+
+  // Load past domains on connect
+  await loadPastDomains();
+
+  // Listen for new DomainRegistered events live
+  contract.on("DomainRegistered", (name, owner, cid) => {
+    console.log(`New domain registered: ${name} by ${owner} with CID ${cid}`);
+
+    if (!domainList.find(d => d.name === name)) {
+      domainList.push({ name, owner, cid });
+      updateDomainListUI();
+    }
+  });
 };
 
 async function uploadToPinata(file) {
@@ -29,7 +43,7 @@ async function uploadToPinata(file) {
   const res = await fetch(url, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${PINATA_JWT_TOKEN}`
+      Authorization: `Bearer ${PINATA_JWT_TOKEN}`,
     },
     body: data
   });
@@ -40,7 +54,7 @@ async function uploadToPinata(file) {
   }
 
   const json = await res.json();
-  return json.IpfsHash;
+  return json.IpfsHash; // preserve exact CID casing here
 }
 
 // Register Domain
@@ -59,7 +73,7 @@ document.getElementById('registerBtn').onclick = async () => {
 
   try {
     const cid = await uploadToPinata(fileInput.files[0]);
-    console.log("Uploaded CID:", cid);
+    console.log("Uploaded CID (case preserved):", cid);
 
     const tx = await contract.registerDomain(domain, cid);
     await tx.wait();
@@ -82,9 +96,18 @@ document.getElementById('resolveBtn').onclick = async () => {
 
   try {
     const cid = await contract.getCID(domain);
-    document.getElementById('previewFrame').src = `https://${cid}.ipfs.dweb.link`;
+    console.log("Resolved CID (case preserved):", cid);
+
+    if (!cid || cid.length === 0) {
+      alert("No CID found for this domain.");
+      return;
+    }
+
+    const ipfsUrl = `https://ipfs.io/ipfs/${cid}`;
+    document.getElementById('previewFrame').src = ipfsUrl;
+    console.log("Loading IPFS URL:", ipfsUrl);
   } catch (error) {
-    console.error(error);
+    console.error("Error resolving domain:", error);
     alert("Error resolving domain: " + error.message);
   }
 };
@@ -118,6 +141,7 @@ document.getElementById('updateCidBtn').onclick = async () => {
   }
 
   try {
+    console.log("Updating CID to (case preserved):", newCid);
     const tx = await contract.updateCID(domain, newCid);
     await tx.wait();
     document.getElementById('updateCidStatus').innerText = `CID updated for ${domain}`;
@@ -146,3 +170,41 @@ document.getElementById('transferDomainBtn').onclick = async () => {
     alert("Error transferring ownership: " + error.message);
   }
 };
+
+// Update domain list UI table
+function updateDomainListUI() {
+  const tbody = document.getElementById('domainsTable');
+  tbody.innerHTML = ''; // Clear existing rows
+
+  domainList.forEach(domain => {
+    const row = document.createElement('tr');
+
+    const nameCell = document.createElement('td');
+    nameCell.innerText = domain.name;
+    row.appendChild(nameCell);
+
+    const cidCell = document.createElement('td');
+    cidCell.innerText = domain.cid;
+    row.appendChild(cidCell);
+
+    tbody.appendChild(row);
+  });
+}
+
+// Load past registered domains by querying past events
+async function loadPastDomains() {
+  try {
+    const filter = contract.filters.DomainRegistered();
+    const events = await contract.queryFilter(filter, 0, "latest");
+
+    domainList = events.map(event => ({
+      name: event.args.name,
+      owner: event.args.owner,
+      cid: event.args.cid
+    }));
+
+    updateDomainListUI();
+  } catch (error) {
+    console.error("Failed to load past domains:", error);
+  }
+}
