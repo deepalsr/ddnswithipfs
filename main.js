@@ -86,31 +86,81 @@ document.getElementById('registerBtn').onclick = async () => {
 };
 
 // Resolve Domain
+// Resolve & Preview the site stored as a ZIP on IPFS
 document.getElementById('resolveBtn').onclick = async () => {
   const domain = document.getElementById('resolveInput').value.trim();
+  const statusEl = document.getElementById('resolveStatus');
+  const iframe = document.getElementById('zipPreviewFrame');
+
+  // Reset status and iframe
+  statusEl.innerText = '';
+  iframe.srcdoc = '';
 
   if (!domain) {
-    alert("Please enter a domain name to resolve");
-    return;
+    return alert("Please enter a domain to resolve.");
   }
 
   try {
+    // 1) Get the CID from-chain
     const cid = await contract.getCID(domain);
-    console.log("Resolved CID (case preserved):", cid);
-
-    if (!cid || cid.length === 0) {
-      alert("No CID found for this domain.");
-      return;
+    if (!cid) {
+      return alert("No CID found for this domain.");
     }
 
-    const ipfsUrl = `https://ipfs.io/ipfs/${cid}`;
-    document.getElementById('previewFrame').src = ipfsUrl;
-    console.log("Loading IPFS URL:", ipfsUrl);
-  } catch (error) {
-    console.error("Error resolving domain:", error);
-    alert("Error resolving domain: " + error.message);
+    statusEl.innerText = `Fetching ZIP (CID: ${cid})…`;
+
+    // 2) Fetch the ZIP file from IPFS
+    const zipUrl = `https://ipfs.io/ipfs/${cid}`;
+    const response = await fetch(zipUrl);
+    if (!response.ok) {
+      throw new Error(`IPFS fetch failed: ${response.status} ${response.statusText}`);
+    }
+    const arrayBuffer = await response.arrayBuffer();
+
+    statusEl.innerText = 'Unpacking ZIP…';
+
+    // 3) Load in JSZip
+    const zip = await JSZip.loadAsync(arrayBuffer);
+
+    // 4) Turn every file into a blob URL
+    const fileURLMap = {};
+    await Promise.all(
+      Object.values(zip.files).map(async file => {
+        const blob = await file.async('blob');
+        fileURLMap[file.name] = URL.createObjectURL(blob);
+      })
+    );
+
+    statusEl.innerText = 'Rewriting index.html…';
+
+    // 5) Grab index.html, rewrite its resource URLs
+    if (!zip.files['index.html']) {
+      throw new Error("ZIP does not contain an index.html at the root.");
+    }
+    const rawHtml = await zip.files['index.html'].async('string');
+    const rewrittenHtml = rawHtml.replace(
+      /(href|src)=["']([^"']+)["']/g,
+      (match, attr, path) => {
+        // If we have a blob URL for this path, inject it
+        return fileURLMap[path]
+          ? `${attr}="${fileURLMap[path]}"`
+          : match;
+      }
+    );
+
+    statusEl.innerText = 'Rendering site…';
+
+    // 6) Inject into iframe
+    iframe.srcdoc = rewrittenHtml;
+    statusEl.innerText = '✅ Site preview ready!';
+
+  } catch (err) {
+    console.error("Resolve & Preview error:", err);
+    alert("Error previewing site: " + err.message);
+    statusEl.innerText = '⚠️ Preview failed.';
   }
 };
+
 
 // Check Ownership
 document.getElementById('checkOwnershipBtn').onclick = async () => {

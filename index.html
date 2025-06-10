@@ -22,7 +22,8 @@
     <h2>Resolve Domain</h2>
     <input type="text" id="resolveInput" placeholder="yourdomain.eth" />
     <button id="resolveBtn">Resolve</button>
-    <iframe id="previewFrame" width="100%" height="300"></iframe>
+    <p id="resolveStatus"></p>
+    <iframe id="zipPreviewFrame" style="width:100%; height:600px; border:1px solid #ccc; margin-top:1rem"></iframe>
   </section>
 
   <section>
@@ -55,7 +56,8 @@
     <button id="transferDomainBtn">Transfer Ownership</button>
     <p id="transferDomainStatus"></p>
   </section>
-
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="./libs/ethers.umd.min.js"></script>
   <script type="module" src="./main.js"></script>
 
