@@ -96,6 +96,14 @@ document.getElementById('resolveBtn').onclick = async () => {
   statusEl.innerText = '';
   iframe.srcdoc = '';
 
+  // Reset TypeScript preview
+  const tsFileSelect = document.getElementById('tsFileSelect');
+  const tsViewer = document.getElementById('tsViewer');
+  if (tsFileSelect && tsViewer) {
+    tsFileSelect.innerHTML = '';
+    tsViewer.textContent = '';
+  }
+
   if (!domain) {
     return alert("Please enter a domain to resolve.");
   }
@@ -141,7 +149,6 @@ document.getElementById('resolveBtn').onclick = async () => {
     const rewrittenHtml = rawHtml.replace(
       /(href|src)=["']([^"']+)["']/g,
       (match, attr, path) => {
-        // If we have a blob URL for this path, inject it
         return fileURLMap[path]
           ? `${attr}="${fileURLMap[path]}"`
           : match;
@@ -154,53 +161,42 @@ document.getElementById('resolveBtn').onclick = async () => {
     iframe.srcdoc = rewrittenHtml;
     statusEl.innerText = '✅ Site preview ready!';
 
+    // ===============================
+    // 🔁 TypeScript File Preview Addon
+    // ===============================
+    if (tsFileSelect && tsViewer) {
+      const tsFiles = Object.values(zip.files).filter(f => f.name.endsWith('.ts'));
+
+      if (tsFiles.length > 0) {
+        tsFiles.forEach(file => {
+          const option = document.createElement('option');
+          option.value = file.name;
+          option.text = file.name;
+          tsFileSelect.appendChild(option);
+        });
+
+        const loadTSFile = async (fileName) => {
+          const tsCode = await zip.files[fileName].async('string');
+          tsViewer.textContent = tsCode;
+          Prism.highlightElement(tsViewer);
+        };
+
+        tsFileSelect.onchange = () => {
+          loadTSFile(tsFileSelect.value);
+        };
+
+        tsFileSelect.value = tsFiles[0].name;
+        await loadTSFile(tsFiles[0].name);
+      }
+    }
+    // ===============================
+
   } catch (err) {
     console.error("Resolve & Preview error:", err);
     alert("Error previewing site: " + err.message);
     statusEl.innerText = '⚠️ Preview failed.';
   }
 };
-
-
-// Check Ownership
-document.getElementById('checkOwnershipBtn').onclick = async () => {
-  const domain = document.getElementById('ownershipInput').value.trim();
-
-  if (!domain) {
-    alert("Please enter a domain name to check ownership");
-    return;
-  }
-
-  try {
-    const owner = await contract.getOwner(domain);
-    document.getElementById('ownershipStatus').innerText = `Owner: ${owner}`;
-  } catch (error) {
-    console.error(error);
-    alert("Error checking ownership: " + error.message);
-  }
-};
-
-// Update CID
-document.getElementById('updateCidBtn').onclick = async () => {
-  const domain = document.getElementById('updateDomainInput').value.trim();
-  const newCid = document.getElementById('newCidInput').value.trim();
-
-  if (!domain || !newCid) {
-    alert("Please enter both domain and new CID");
-    return;
-  }
-
-  try {
-    console.log("Updating CID to (case preserved):", newCid);
-    const tx = await contract.updateCID(domain, newCid);
-    await tx.wait();
-    document.getElementById('updateCidStatus').innerText = `CID updated for ${domain}`;
-  } catch (error) {
-    console.error(error);
-    alert("Error updating CID: " + error.message);
-  }
-};
-
 // Transfer Domain Ownership
 document.getElementById('transferDomainBtn').onclick = async () => {
   const domain = document.getElementById('transferDomainInput').value.trim();

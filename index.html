@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <title>DDNS with Pinata IPFS</title>
+
+  <!-- Prism.js for syntax highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
 </head>
 <body>
   <h1>Decentralized DNS with Pinata IPFS</h1>
@@ -24,6 +27,14 @@
     <button id="resolveBtn">Resolve</button>
     <p id="resolveStatus"></p>
     <iframe id="zipPreviewFrame" style="width:100%; height:600px; border:1px solid #ccc; margin-top:1rem"></iframe>
+  </section>
+
+  <section>
+    <h2>TypeScript Source Viewer</h2>
+    <select id="tsFileSelect" style="margin-bottom: 0.5rem;"></select>
+    <pre style="background: #f4f4f4; padding: 1rem; overflow-x: auto;">
+      <code id="tsViewer" class="language-typescript"></code>
+    </pre>
   </section>
 
   <section>
@@ -56,10 +67,12 @@
     <button id="transferDomainBtn">Transfer Ownership</button>
     <p id="transferDomainStatus"></p>
   </section>
-  
+
+  <!-- Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
   <script src="./libs/ethers.umd.min.js"></script>
   <script type="module" src="./main.js"></script>
-
 </body>
 </html>
