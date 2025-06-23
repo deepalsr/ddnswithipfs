@@ -90,113 +90,71 @@ document.getElementById('registerBtn').onclick = async () => {
 document.getElementById('resolveBtn').onclick = async () => {
   const domain = document.getElementById('resolveInput').value.trim();
   const statusEl = document.getElementById('resolveStatus');
-  const iframe = document.getElementById('zipPreviewFrame');
+  const miniBrowser = document.getElementById('miniBrowser');
 
-  // Reset status and iframe
-  statusEl.innerText = '';
-  iframe.srcdoc = '';
+  // Reset UI
+  statusEl.textContent = '';
+  miniBrowser.innerHTML = '';
+  document.getElementById('resolvedDomain').textContent = '';
+  document.getElementById('resolvedCid').textContent = '';
 
-  // Reset TypeScript preview
-  const tsFileSelect = document.getElementById('tsFileSelect');
-  const tsViewer = document.getElementById('tsViewer');
-  if (tsFileSelect && tsViewer) {
-    tsFileSelect.innerHTML = '';
-    tsViewer.textContent = '';
-  }
-
-  if (!domain) {
-    return alert("Please enter a domain to resolve.");
-  }
+  if (!domain) return alert("Please enter a domain.");
 
   try {
-    // 1) Get the CID from-chain
     const cid = await contract.getCID(domain);
-    if (!cid) {
-      return alert("No CID found for this domain.");
-    }
+    if (!cid) throw new Error("No CID registered for this domain.");
 
-    statusEl.innerText = `Fetching ZIP (CID: ${cid})…`;
+    document.getElementById('resolvedDomain').textContent = domain;
+    document.getElementById('resolvedCid').textContent = cid;
 
-    // 2) Fetch the ZIP file from IPFS
-    const zipUrl = `https://ipfs.io/ipfs/${cid}`;
-    const response = await fetch(zipUrl);
-    if (!response.ok) {
-      throw new Error(`IPFS fetch failed: ${response.status} ${response.statusText}`);
-    }
-    const arrayBuffer = await response.arrayBuffer();
+    statusEl.innerText = `📦 Fetching ZIP from IPFS...`;
+    const response = await fetch(`https://ipfs.io/ipfs/${cid}`);
+    const buffer = await response.arrayBuffer();
 
-    statusEl.innerText = 'Unpacking ZIP…';
+    const zip = await JSZip.loadAsync(buffer);
+    const files = {}, blobs = {};
 
-    // 3) Load in JSZip
-    const zip = await JSZip.loadAsync(arrayBuffer);
+    // Load all files into memory and create blob URLs
+    await Promise.all(Object.entries(zip.files).map(async ([name, file]) => {
+      const content = await file.async('string');
+      let type = 'text/plain';
+      if (name.endsWith('.js')) type = 'application/javascript';
+      else if (name.endsWith('.css')) type = 'text/css';
+      else if (name.endsWith('.html')) type = 'text/html';
 
-    // 4) Turn every file into a blob URL
-    const fileURLMap = {};
-    await Promise.all(
-      Object.values(zip.files).map(async file => {
-        const blob = await file.async('blob');
-        fileURLMap[file.name] = URL.createObjectURL(blob);
-      })
-    );
+      const blob = new Blob([content], { type });
+      files[name] = content;
+      blobs[name] = URL.createObjectURL(blob);
+    }));
 
-    statusEl.innerText = 'Rewriting index.html…';
+    // Find index.html
+    const indexPath = Object.keys(files).find(n => n.endsWith('index.html'));
+    if (!indexPath) throw new Error("No index.html found in ZIP.");
 
-    // 5) Grab index.html, rewrite its resource URLs
-    if (!zip.files['index.html']) {
-      throw new Error("ZIP does not contain an index.html at the root.");
-    }
-    const rawHtml = await zip.files['index.html'].async('string');
-    const rewrittenHtml = rawHtml.replace(
-      /(href|src)=["']([^"']+)["']/g,
-      (match, attr, path) => {
-        return fileURLMap[path]
-          ? `${attr}="${fileURLMap[path]}"`
-          : match;
-      }
-    );
+    // Rewrite src/href references to blob URLs
+    let html = files[indexPath];
+    html = html.replace(/(src|href)=["']([^"']+)["']/g, (_, attr, path) => {
+      return blobs[path] ? `${attr}="${blobs[path]}"` : `${attr}="${path}"`;
+    });
 
-    statusEl.innerText = 'Rendering site…';
+    // Create and inject iframe
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+    iframe.style.width = '100%';
+    iframe.style.height = '600px';
+    iframe.style.border = '1px solid #ccc';
+    iframe.srcdoc = html;
+    miniBrowser.appendChild(iframe);
 
-    // 6) Inject into iframe
-    iframe.srcdoc = rewrittenHtml;
-    statusEl.innerText = '✅ Site preview ready!';
-
-    // ===============================
-    // 🔁 TypeScript File Preview Addon
-    // ===============================
-    if (tsFileSelect && tsViewer) {
-      const tsFiles = Object.values(zip.files).filter(f => f.name.endsWith('.ts'));
-
-      if (tsFiles.length > 0) {
-        tsFiles.forEach(file => {
-          const option = document.createElement('option');
-          option.value = file.name;
-          option.text = file.name;
-          tsFileSelect.appendChild(option);
-        });
-
-        const loadTSFile = async (fileName) => {
-          const tsCode = await zip.files[fileName].async('string');
-          tsViewer.textContent = tsCode;
-          Prism.highlightElement(tsViewer);
-        };
-
-        tsFileSelect.onchange = () => {
-          loadTSFile(tsFileSelect.value);
-        };
-
-        tsFileSelect.value = tsFiles[0].name;
-        await loadTSFile(tsFiles[0].name);
-      }
-    }
-    // ===============================
-
+    statusEl.innerText = '✅ Site preview loaded!';
   } catch (err) {
-    console.error("Resolve & Preview error:", err);
-    alert("Error previewing site: " + err.message);
-    statusEl.innerText = '⚠️ Preview failed.';
+    console.error("Preview error:", err);
+    statusEl.innerText = '❌ Preview failed.';
+    alert("Failed to render site: " + err.message);
   }
 };
+
+
 // Transfer Domain Ownership
 document.getElementById('transferDomainBtn').onclick = async () => {
   const domain = document.getElementById('transferDomainInput').value.trim();

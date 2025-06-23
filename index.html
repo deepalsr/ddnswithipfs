@@ -2,17 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>DDNS with Pinata IPFS</title>
+  <title>DDNS with IPFS Preview</title>
 
-  <!-- Prism.js for syntax highlighting -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2rem;
+    }
+    input, button {
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+    }
+    section {
+      margin-bottom: 2rem;
+    }
+    #miniBrowser {
+      border: 1px solid #ccc;
+      height: 600px;
+      overflow: hidden;
+      background: white;
+    }
+  </style>
 </head>
 <body>
-  <h1>Decentralized DNS with Pinata IPFS</h1>
+  <h1>Decentralized Domain Resolver (IPFS)</h1>
 
   <button id="connectWallet">Connect Wallet</button>
   <p id="walletAddress"></p>
 
+  <!-- 📦 Register -->
   <section>
     <h2>Register Domain</h2>
     <input type="text" id="domainInput" placeholder="yourdomain.eth" />
@@ -21,22 +40,22 @@
     <p id="registerStatus"></p>
   </section>
 
+  <!-- 🌍 Resolve and Render -->
   <section>
     <h2>Resolve Domain</h2>
     <input type="text" id="resolveInput" placeholder="yourdomain.eth" />
     <button id="resolveBtn">Resolve</button>
     <p id="resolveStatus"></p>
-    <iframe id="zipPreviewFrame" style="width:100%; height:600px; border:1px solid #ccc; margin-top:1rem"></iframe>
+
+    <div>
+      <strong>Domain:</strong> <span id="resolvedDomain"></span> |
+      <strong>CID:</strong> <span id="resolvedCid"></span>
+    </div>
+
+    <div id="miniBrowser" style="margin-top:1rem;"></div>
   </section>
 
-  <section>
-    <h2>TypeScript Source Viewer</h2>
-    <select id="tsFileSelect" style="margin-bottom: 0.5rem;"></select>
-    <pre style="background: #f4f4f4; padding: 1rem; overflow-x: auto;">
-      <code id="tsViewer" class="language-typescript"></code>
-    </pre>
-  </section>
-
+  <!-- 👁 Ownership -->
   <section>
     <h2>Check Ownership</h2>
     <input type="text" id="ownershipInput" placeholder="yourdomain.eth" />
@@ -44,22 +63,27 @@
     <p id="ownershipStatus"></p>
   </section>
 
+  <!-- 📋 Domain Table -->
   <section>
-    <h2>All Domains</h2>
+    <h2>All Registered Domains</h2>
     <table border="1" width="100%">
-      <thead><tr><th>Domain</th><th>CID</th></tr></thead>
+      <thead>
+        <tr><th>Domain</th><th>CID</th></tr>
+      </thead>
       <tbody id="domainsTable"></tbody>
     </table>
   </section>
 
+  <!-- 🔁 CID Update -->
   <section>
-    <h2>Update Domain CID</h2>
+    <h2>Update CID</h2>
     <input type="text" id="updateDomainInput" placeholder="yourdomain.eth" />
     <input type="text" id="newCidInput" placeholder="New CID" />
     <button id="updateCidBtn">Update CID</button>
     <p id="updateCidStatus"></p>
   </section>
 
+  <!-- 🔄 Ownership Transfer -->
   <section>
     <h2>Transfer Domain Ownership</h2>
     <input type="text" id="transferDomainInput" placeholder="yourdomain.eth" />
@@ -71,7 +95,6 @@
   <!-- Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
   <script src="./libs/ethers.umd.min.js"></script>
   <script type="module" src="./main.js"></script>
 </body>
