@@ -1,101 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>DDNS with IPFS Preview</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Decentralized DNS - Blockchain & IPFS</title>
+    <meta name="description" content="Revolutionary decentralized DNS system powered by blockchain technology and IPFS for a truly decentralized internet." />
+    <meta name="author" content="Decentralized DNS Team" />
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" />
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 2rem;
-    }
-    input, button {
-      padding: 0.5rem;
-      margin: 0.5rem 0;
-    }
-    section {
-      margin-bottom: 2rem;
-    }
-    #miniBrowser {
-      border: 1px solid #ccc;
-      height: 600px;
-      overflow: hidden;
-      background: white;
-    }
-  </style>
-</head>
-<body>
-  <h1>Decentralized Domain Resolver (IPFS)</h1>
+    <meta property="og:title" content="Decentralized DNS - Blockchain & IPFS" />
+    <meta property="og:description" content="Revolutionary decentralized DNS system powered by blockchain technology and IPFS for a truly decentralized internet." />
+    <meta property="og:type" content="website" />
 
-  <button id="connectWallet">Connect Wallet</button>
-  <p id="walletAddress"></p>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+  </head>
 
-  <!-- 📦 Register -->
-  <section>
-    <h2>Register Domain</h2>
-    <input type="text" id="domainInput" placeholder="yourdomain.eth" />
-    <input type="file" id="fileInput" />
-    <button id="registerBtn">Upload & Register</button>
-    <p id="registerStatus"></p>
-  </section>
+  <body>
+    <!-- Navigation -->
+    <nav class="nav">
+      <div class="nav-container">
+        <div class="nav-brand">
+          <span class="nav-logo">🌐</span>
+          <span class="nav-title">Decentralized DNS</span>
+        </div>
+        <div class="nav-links">
+          <a href="#features" class="nav-link">Features</a>
+          <a href="#technology" class="nav-link">Technology</a>
+          <a href="#dns-app" class="nav-link">DNS Manager</a>
+        </div>
+        <button class="nav-toggle" id="nav-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </nav>
 
-  <!-- 🌍 Resolve and Render -->
-  <section>
-    <h2>Resolve Domain</h2>
-    <input type="text" id="resolveInput" placeholder="yourdomain.eth" />
-    <button id="resolveBtn">Resolve</button>
-    <p id="resolveStatus"></p>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <h1 class="hero-title">
+            The Future of DNS is
+            <span class="gradient-text">Decentralized</span>
+          </h1>
+          <p class="hero-description">
+            Built on blockchain technology and IPFS, our decentralized DNS system eliminates single points of failure, 
+            censorship, and central authority control. Experience true internet freedom.
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" onclick="document.getElementById('dns-app').scrollIntoView({behavior: 'smooth'})">Start Managing Domains</button>
+            <button class="btn btn-secondary" onclick="window.open('documentation.html', '_blank')">View Documentation</button>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="blockchain-animation">
+            <div class="block block-1"></div>
+            <div class="block block-2"></div>
+            <div class="block block-3"></div>
+            <div class="connection-line line-1"></div>
+            <div class="connection-line line-2"></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <div>
-      <strong>Domain:</strong> <span id="resolvedDomain"></span> |
-      <strong>CID:</strong> <span id="resolvedCid"></span>
-    </div>
+    <!-- Features Section -->
+    <section class="features" id="features">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Why Decentralized DNS?</h2>
+          <p class="section-description">
+            Traditional DNS systems have fundamental flaws. Our solution addresses them all.
+          </p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3 class="feature-title">Censorship Resistant</h3>
+            <p class="feature-description">
+              No single entity can control or censor your domain. True decentralization means true freedom.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3 class="feature-title">High Availability</h3>
+            <p class="feature-description">
+              Distributed across thousands of nodes. No single point of failure means 99.99% uptime.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🌍</div>
+            <h3 class="feature-title">Global Network</h3>
+            <p class="feature-description">
+              IPFS ensures your content is distributed globally for optimal performance worldwide.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <h3 class="feature-title">Cryptographic Security</h3>
+            <p class="feature-description">
+              Blockchain-based verification ensures tamper-proof records and enhanced security.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">💰</div>
+            <h3 class="feature-title">Cost Effective</h3>
+            <p class="feature-description">
+              Eliminate intermediaries and reduce costs while maintaining enterprise-grade reliability.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔄</div>
+            <h3 class="feature-title">Self-Sovereign</h3>
+            <p class="feature-description">
+              You own your domain names completely. No renewals, no risk of losing your digital identity.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <div id="miniBrowser" style="margin-top:1rem;"></div>
-  </section>
+    <!-- Technology Section -->
+    <section class="technology" id="technology">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Built on Cutting-Edge Technology</h2>
+          <p class="section-description">
+            Combining the best of blockchain and distributed systems for a robust DNS solution.
+          </p>
+        </div>
+        <div class="tech-grid">
+          <div class="tech-card">
+            <div class="tech-header">
+              <div class="tech-icon blockchain-icon">⛓️</div>
+              <h3 class="tech-title">Blockchain</h3>
+            </div>
+            <p class="tech-description">
+              Immutable ledger technology ensures DNS records are tamper-proof and verifiable by anyone.
+            </p>
+            <div class="tech-features">
+              <span class="tech-tag">Smart Contracts</span>
+              <span class="tech-tag">Consensus</span>
+              <span class="tech-tag">Immutability</span>
+            </div>
+          </div>
+          <div class="tech-card">
+            <div class="tech-header">
+              <div class="tech-icon ipfs-icon">📁</div>
+              <h3 class="tech-title">IPFS</h3>
+            </div>
+            <p class="tech-description">
+              InterPlanetary File System provides distributed content delivery and eliminates single points of failure.
+            </p>
+            <div class="tech-features">
+              <span class="tech-tag">Content Addressing</span>
+              <span class="tech-tag">P2P Network</span>
+              <span class="tech-tag">Deduplication</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <!-- 👁 Ownership -->
-  <section>
-    <h2>Check Ownership</h2>
-    <input type="text" id="ownershipInput" placeholder="yourdomain.eth" />
-    <button id="checkOwnershipBtn">Check Ownership</button>
-    <p id="ownershipStatus"></p>
-  </section>
+    <!-- DNS Application Section -->
+    <section class="dns-app" id="dns-app">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Decentralized DNS Manager</h2>
+          <p class="section-description">
+            Manage your decentralized domains directly on the blockchain
+          </p>
+        </div>
 
-  <!-- 📋 Domain Table -->
-  <section>
-    <h2>All Registered Domains</h2>
-    <table border="1" width="100%">
-      <thead>
-        <tr><th>Domain</th><th>CID</th></tr>
-      </thead>
-      <tbody id="domainsTable"></tbody>
-    </table>
-  </section>
+        <!-- Wallet Connection -->
+        <div class="wallet-section">
+          <button id="connectWallet" class="btn btn-primary">Connect Wallet</button>
+          <p id="walletAddress" class="wallet-address"></p>
+        </div>
 
-  <!-- 🔁 CID Update -->
-  <section>
-    <h2>Update CID</h2>
-    <input type="text" id="updateDomainInput" placeholder="yourdomain.eth" />
-    <input type="text" id="newCidInput" placeholder="New CID" />
-    <button id="updateCidBtn">Update CID</button>
-    <p id="updateCidStatus"></p>
-  </section>
+        <div class="dns-grid">
+          <!-- Register Domain -->
+          <div class="dns-card">
+            <h3 class="dns-card-title">📦 Register Domain</h3>
+            <div class="dns-form">
+              <input type="text" id="domainInput" placeholder="yourdomain.eth/.ddns" class="dns-input" />
+              <input type="file" id="fileInput" class="dns-file-input" />
+              <button id="registerBtn" class="btn btn-primary">Upload & Register</button>
+              <p id="registerStatus" class="dns-status"></p>
+            </div>
+          </div>
 
-  <!-- 🔄 Ownership Transfer -->
-  <section>
-    <h2>Transfer Domain Ownership</h2>
-    <input type="text" id="transferDomainInput" placeholder="yourdomain.eth" />
-    <input type="text" id="newOwnerInput" placeholder="New Owner Address" />
-    <button id="transferDomainBtn">Transfer Ownership</button>
-    <p id="transferDomainStatus"></p>
-  </section>
+          <!-- Resolve Domain -->
+          <div class="dns-card">
+            <h3 class="dns-card-title">🌍 Resolve & Preview</h3>
+            <div class="dns-form">
+              <input type="text" id="resolveInput" placeholder="yourdomain.eth/.ddns" class="dns-input" />
+              <button id="resolveBtn" class="btn btn-primary">Resolve</button>
+              <p id="resolveStatus" class="dns-status"></p>
+              <div class="resolve-info">
+                <strong>Domain:</strong> <span id="resolvedDomain"></span><br>
+                <strong>CID:</strong> <span id="resolvedCid"></span>
+              </div>
+              <div id="miniBrowser" class="mini-browser"></div>
+            </div>
+          </div>
 
-  <!-- Libraries -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-  <script src="./libs/ethers.umd.min.js"></script>
-  <script type="module" src="./main.js"></script>
-</body>
+          <!-- Check Ownership -->
+          <div class="dns-card">
+            <h3 class="dns-card-title">👁 Check Ownership</h3>
+            <div class="dns-form">
+              <input type="text" id="ownershipInput" placeholder="yourdomain.eth/.ddns" class="dns-input" />
+              <button id="checkOwnershipBtn" class="btn btn-primary">Check Ownership</button>
+              <p id="ownershipStatus" class="dns-status"></p>
+            </div>
+          </div>
+
+          <!-- Update CID -->
+          <div class="dns-card">
+            <h3 class="dns-card-title">🔁 Update CID</h3>
+            <div class="dns-form">
+              <input type="text" id="updateDomainInput" placeholder="yourdomain.eth/.ddns" class="dns-input" />
+              <input type="text" id="newCidInput" placeholder="New CID" class="dns-input" />
+              <button id="updateCidBtn" class="btn btn-primary">Update CID</button>
+              <p id="updateCidStatus" class="dns-status"></p>
+            </div>
+          </div>
+
+          <!-- Transfer Ownership -->
+          <div class="dns-card">
+            <h3 class="dns-card-title">🔄 Transfer Domain</h3>
+            <div class="dns-form">
+              <input type="text" id="transferDomainInput" placeholder="yourdomain.eth/.ddns" class="dns-input" />
+              <input type="text" id="newOwnerInput" placeholder="New Owner Address" class="dns-input" />
+              <button id="transferDomainBtn" class="btn btn-primary">Transfer Ownership</button>
+              <p id="transferDomainStatus" class="dns-status"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Domain List -->
+        <div class="domain-list-section">
+          <h3 class="section-title">📋 All Registered Domains</h3>
+          <div class="table-container">
+            <table class="domains-table">
+              <thead>
+                <tr>
+                  <th>Domain</th>
+                  <th>CID</th>
+                </tr>
+              </thead>
+              <tbody id="domainsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+      <div class="container">
+        <div class="cta-content">
+          <h2 class="cta-title">Ready to Join the Decentralized Web?</h2>
+          <p class="cta-description">
+            Start using decentralized DNS today and take control of your digital presence.
+          </p>
+          <div class="cta-actions">
+            <button class="btn btn-primary btn-large" onclick="document.getElementById('dns-app').scrollIntoView({behavior: 'smooth'})">Start Building</button>
+            <button class="btn btn-outline btn-large" onclick="window.open('documentation.html', '_blank')">View Documentation</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <span class="footer-logo">🌐</span>
+            <span class="footer-title">Decentralized DNS</span>
+          </div>
+          <div class="footer-links-row">
+            <a href="#" class="footer-link">Product</a>
+            <a href="#features" class="footer-link">Features</a>
+            <a href="#technology" class="footer-link">Technology</a>
+            <a href="#" class="footer-link">Pricing</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script src="script.js"></script>
+    <script type="module" src="main.js"></script>
+  </body>
 </html>

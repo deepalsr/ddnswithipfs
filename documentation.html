@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Documentation - Decentralized DNS</title>
+    <meta name="description" content="Complete documentation for the Decentralized DNS system built with blockchain and IPFS." />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+  </head>
+
+  <body>
+    <!-- Header -->
+    <header class="doc-header">
+      <div class="container">
+        <div class="doc-header-content">
+          <div class="doc-brand">
+            <span class="nav-logo">🌐</span>
+            <span class="nav-title">Decentralized DNS Documentation</span>
+          </div>
+          <button class="btn btn-secondary" onclick="window.close()">Close</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Documentation Section -->
+    <section class="documentation">
+      <div class="container">
+        <div class="section-header">
+          <h1 class="section-title">Documentation</h1>
+          <p class="section-description">
+            Complete guide to building and deploying your decentralized DNS system
+          </p>
+        </div>
+
+        <div class="doc-nav">
+          <div class="doc-nav-item active" onclick="showDocSection('quick-start')">Quick Start</div>
+          <div class="doc-nav-item" onclick="showDocSection('deployment')">Smart Contract</div>
+          <div class="doc-nav-item" onclick="showDocSection('web-client')">Web Client</div>
+          <div class="doc-nav-item" onclick="showDocSection('architecture')">Architecture</div>
+          <div class="doc-nav-item" onclick="showDocSection('api')">API Reference</div>
+          <div class="doc-nav-item" onclick="showDocSection('troubleshooting')">Troubleshooting</div>
+        </div>
+
+        <div class="doc-content">
+          <!-- Quick Start -->
+          <div id="quick-start" class="doc-section active">
+            <h3 class="doc-section-title">Quick Start</h3>
+            
+            <div class="doc-subsection">
+              <h4>Prerequisites</h4>
+              <ul class="doc-list">
+                <li><strong>Node.js</strong> (v14 or later) and <strong>npm</strong> or <strong>yarn</strong></li>
+                <li><strong>Ganache CLI</strong> or <strong>Ganache GUI</strong> (local Ethereum network)</li>
+                <li><strong>Hardhat</strong> (Ethereum development framework)</li>
+                <li><strong>Solidity compiler</strong> (solc v0.8.x)</li>
+                <li><strong>Pinata account</strong> with API key & secret</li>
+                <li><strong>Pinata SDK</strong> (@pinata/sdk)</li>
+                <li><strong>HTTP server</strong> (e.g., http-server)</li>
+              </ul>
+            </div>
+
+            <div class="doc-subsection">
+              <h4>Installation</h4>
+              <div class="code-block">
+                <pre><code># Clone both repositories
+git clone https://github.com/deepalsr/ddnsregistry.git
+git clone https://github.com/deepalsr/ddnswithipfs.git
+
+# Install dependencies
+cd ddnsregistry
+npm install
+cd ../ddnswithipfs
+npm install</code></pre>
+              </div>
+            </div>
+
+            <div class="doc-subsection">
+              <h4>Configuration</h4>
+              <div class="code-block">
+                <pre><code># Set Pinata credentials
+export PINATA_API_KEY="&lt;YOUR_PINATA_API_KEY&gt;"
+export PINATA_SECRET_API_KEY="&lt;YOUR_PINATA_SECRET_API_KEY&gt;"</code></pre>
+              </div>
+              <p>Edit <code>ddnswithipfs/contract.js</code>:</p>
+              <div class="code-block">
+                <pre><code>const rpcEndpoint = "http://127.0.0.1:7545";
+const registryAddress = "&lt;DEPLOYED_CONTRACT_ADDRESS&gt;";</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Smart Contract Deployment -->
+          <div id="deployment" class="doc-section">
+            <h3 class="doc-section-title">Deploying the Smart Contract</h3>
+            
+            <div class="doc-subsection">
+              <h4>Start Ganache</h4>
+              <div class="code-block">
+                <pre><code>ganache-cli --port 7545</code></pre>
+              </div>
+            </div>
+
+            <div class="doc-subsection">
+              <h4>Compile & Deploy</h4>
+              <div class="code-block">
+                <pre><code>cd ddnsregistry
+npx hardhat compile
+npx hardhat run --network localhost scripts/deploy.js</code></pre>
+              </div>
+              <p><strong>Important:</strong> Save the contract address printed in the console and update your web client accordingly.</p>
+            </div>
+          </div>
+
+          <!-- Web Client Usage -->
+          <div id="web-client" class="doc-section">
+            <h3 class="doc-section-title">Using the Web Client</h3>
+            
+            <div class="doc-subsection">
+              <h4>Serve Static Files</h4>
+              <div class="code-block">
+                <pre><code>cd ddnswithipfs
+npx http-server -c-1 .</code></pre>
+              </div>
+              <p>Open your browser at <code>http://localhost:8080</code></p>
+            </div>
+
+            <div class="doc-subsection">
+              <h4>Register a New Domain</h4>
+              <ul class="doc-list">
+                <li>Click <strong>Register</strong>, enter the domain name (e.g. <code>example.eth</code>)</li>
+                <li>Select your local site folder</li>
+                <li>The client uploads assets to Pinata, pins them, and sends a registration transaction</li>
+              </ul>
+            </div>
+
+            <div class="doc-subsection">
+              <h4>Resolve a Domain</h4>
+              <ul class="doc-list">
+                <li>Enter an existing domain and click <strong>Resolve</strong></li>
+                <li>The client fetches the IPFS content hash from-chain and previews your site</li>
+              </ul>
+            </div>
+
+            <div class="doc-subsection">
+              <h4>Update Content</h4>
+              <ul class="doc-list">
+                <li>Select <strong>Update</strong>, choose a new folder, and click <strong>Update</strong></li>
+                <li>New assets are pinned to IPFS and the on-chain record is updated</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Architecture -->
+          <div id="architecture" class="doc-section">
+            <h3 class="doc-section-title">Architecture Overview</h3>
+            
+            <div class="architecture-diagram">
+              <div class="arch-flow">
+                <div class="arch-node">Browser</div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-node">Static Web Client</div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-node">Ganache Node</div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-node">Registry Contract</div>
+              </div>
+              <div class="arch-flow">
+                <div class="arch-node">Client</div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-node">Pinata IPFS</div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-node">Content Delivery</div>
+              </div>
+            </div>
+
+            <div class="doc-subsection">
+              <h4>Flow Description</h4>
+              <ol class="doc-list">
+                <li><strong>User</strong> interacts with the web client</li>
+                <li><strong>Client</strong> reads/writes domain records on-chain via Ganache</li>
+                <li><strong>Client</strong> uploads site assets to Pinata; receives IPFS CID</li>
+                <li><strong>Registry</strong> stores and returns the CID</li>
+                <li><strong>Content</strong> is served from Pinata's IPFS gateway</li>
+              </ol>
+            </div>
+          </div>
+
+          <!-- API Reference -->
+          <div id="api" class="doc-section">
+            <h3 class="doc-section-title">API Reference</h3>
+            
+            <div class="api-method">
+              <h4>register(domain: string, directory: FileList): Promise&lt;TransactionReceipt&gt;</h4>
+              <p>Pins <code>directory</code> to IPFS via Pinata, then registers <code>domain</code> for 365 days.</p>
+            </div>
+
+            <div class="api-method">
+              <h4>resolve(domain: string): Promise&lt;string&gt;</h4>
+              <p>Returns the current IPFS CID for <code>domain</code>.</p>
+            </div>
+
+            <div class="api-method">
+              <h4>update(domain: string, directory: FileList): Promise&lt;TransactionReceipt&gt;</h4>
+              <p>Pins new <code>directory</code> to IPFS and updates the on-chain record.</p>
+            </div>
+
+            <div class="api-method">
+              <h4>transfer(domain: string, newOwner: string): Promise&lt;TransactionReceipt&gt;</h4>
+              <p>Transfers ownership of <code>domain</code> to <code>newOwner</code> address.</p>
+            </div>
+          </div>
+
+          <!-- Troubleshooting -->
+          <div id="troubleshooting" class="doc-section">
+            <h3 class="doc-section-title">Troubleshooting</h3>
+            
+            <div class="troubleshoot-item">
+              <h4>Failed Transactions</h4>
+              <p>Check Ganache logs for gas errors and verify the correct RPC URL is configured.</p>
+            </div>
+
+            <div class="troubleshoot-item">
+              <h4>Pinata Upload Errors</h4>
+              <p>Verify environment variables are set correctly and check network connectivity to Pinata services.</p>
+            </div>
+
+            <div class="troubleshoot-item">
+              <h4>CORS Issues</h4>
+              <p>Configure Pinata gateway headers or use a local IPFS daemon for testing purposes.</p>
+            </div>
+
+            <div class="troubleshoot-item">
+              <h4>Advanced Topics</h4>
+              <ul class="doc-list">
+                <li><strong>ENS Compatibility:</strong> Build a compatibility layer to mirror ENS records</li>
+                <li><strong>DNS-over-HTTPS (DoH):</strong> Proxy smart contract lookups via DoH</li>
+                <li><strong>Multi-chain Support:</strong> Deploy registry contracts on other EVM chains (e.g., Polygon)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // Documentation navigation
+      function showDocSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.doc-section').forEach(section => {
+          section.classList.remove('active');
+        });
+        
+        // Remove active class from nav items
+        document.querySelectorAll('.doc-nav-item').forEach(item => {
+          item.classList.remove('active');
+        });
+        
+        // Show selected section
+        document.getElementById(sectionId).classList.add('active');
+        
+        // Add active class to clicked nav item
+        event.target.classList.add('active');
+      }
+    </script>
+
+    <style>
+      .doc-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid #e2e8f0;
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      
+      .doc-header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .doc-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      
+      .documentation {
+        padding: 2rem 0;
+      }
+    </style>
+  </body>
+</html>
