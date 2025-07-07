@@ -24,7 +24,7 @@ document.getElementById('connectWallet').onclick = async () => {
 
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   await provider.send('eth_requestAccounts', []);
-  const signer = provider.getSigner();
+  signer = provider.getSigner();
   const address = await signer.getAddress();
 
   
@@ -232,11 +232,16 @@ document.getElementById('checkOwnershipBtn').onclick = async () => {
     return;
   }
 
+  if (!signer) {
+    alert("Please connect your wallet first.");
+    return;
+  }
+
   try {
     const owner = await contract.getOwner(domain);
     const currentUser = await signer.getAddress();
     const isOwner = owner.toLowerCase() === currentUser.toLowerCase();
-    
+
     document.getElementById('ownershipStatus').innerText = 
       `Owner: ${owner} ${isOwner ? '(You own this domain)' : ''}`;
   } catch (error) {
@@ -244,6 +249,7 @@ document.getElementById('checkOwnershipBtn').onclick = async () => {
     document.getElementById('ownershipStatus').innerText = "Domain not found or error occurred";
   }
 };
+
 
 // Update CID
 document.getElementById('updateCidBtn').onclick = async () => {
