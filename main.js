@@ -27,7 +27,7 @@ document.getElementById('connectWallet').onclick = async () => {
   const signer = provider.getSigner();
   const address = await signer.getAddress();
 
-  // Optional: Sign a login message for verification
+  
   const message = "Log in to Decentralized DNS";
   const signature = await signer.signMessage(message);
   const recoveredAddress = ethers.utils.verifyMessage(message, signature);
@@ -37,7 +37,7 @@ document.getElementById('connectWallet').onclick = async () => {
     return;
   }
 
-  // Save to localStorage (or React state if using SPA)
+  
   localStorage.setItem("userAddress", address);
   document.getElementById('walletAddress').innerText = 'Connected: ' + address;
 
