@@ -21,17 +21,37 @@ document.getElementById('connectWallet').onclick = async () => {
     alert("Please install MetaMask!");
     return;
   }
+
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   await provider.send('eth_requestAccounts', []);
-  signer = provider.getSigner();
-  contract = new ethers.Contract(contractAddress, abi, signer);
+  const signer = provider.getSigner();
   const address = await signer.getAddress();
+
+  // Optional: Sign a login message for verification
+  const message = "Log in to Decentralized DNS";
+  const signature = await signer.signMessage(message);
+  const recoveredAddress = ethers.utils.verifyMessage(message, signature);
+
+  if (recoveredAddress.toLowerCase() !== address.toLowerCase()) {
+    alert("Signature verification failed!");
+    return;
+  }
+
+  // Save to localStorage (or React state if using SPA)
+  localStorage.setItem("userAddress", address);
   document.getElementById('walletAddress').innerText = 'Connected: ' + address;
 
-  // Load past domains on connect
+  // Connect contract
+  contract = new ethers.Contract(contractAddress, abi, signer);
+
+  // Load past domains
   await loadPastDomains();
 
-  // Listen for new DomainRegistered events live
+  // Remove previous listeners (if any)
+  contract.removeAllListeners("DomainRegistered");
+  contract.removeAllListeners("CIDUpdated");
+
+  // Listen for new DomainRegistered events
   contract.on("DomainRegistered", (name, owner, cid) => {
     console.log(`New domain registered: ${name} by ${owner} with CID ${cid}`);
 
@@ -41,7 +61,7 @@ document.getElementById('connectWallet').onclick = async () => {
     }
   });
 
-  // Listen for CIDUpdated events live
+  // Listen for CIDUpdated events
   contract.on("CIDUpdated", (name, newCid) => {
     console.log(`CID updated for domain: ${name} to new CID: ${newCid}`);
 
@@ -52,6 +72,7 @@ document.getElementById('connectWallet').onclick = async () => {
     }
   });
 };
+
 
 async function uploadToPinata(file) {
   const url = "https://api.pinata.cloud/pinning/pinFileToIPFS";
