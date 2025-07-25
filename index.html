@@ -207,7 +207,7 @@
         <div class="dns-grid">
           <!-- Register Domain -->
           <div class="dns-card">
-            <h3 class="dns-card-title">📦 Register Domain</h3>
+            <h3 class="dns-card-title">Register Domain</h3>
             <div class="dns-form">
               <input type="text" id="domainInput"
                 placeholder="yourdomain.eth/.ddns" class="dns-input" />
@@ -220,7 +220,7 @@
 
           <!-- Resolve Domain -->
           <div class="dns-card">
-            <h3 class="dns-card-title">🌍 Resolve & Preview</h3>
+            <h3 class="dns-card-title">Resolve & Preview</h3>
             <div class="dns-form">
               <input type="text" id="resolveInput"
                 placeholder="yourdomain.eth/.ddns" class="dns-input" />
@@ -236,7 +236,7 @@
 
           <!-- Check Ownership -->
           <div class="dns-card">
-            <h3 class="dns-card-title">👁 Check Ownership</h3>
+            <h3 class="dns-card-title">Check Ownership</h3>
             <div class="dns-form">
               <input type="text" id="ownershipInput"
                 placeholder="yourdomain.eth/.ddns" class="dns-input" />
@@ -248,7 +248,7 @@
 
           <!-- Update CID -->
           <div class="dns-card">
-            <h3 class="dns-card-title">🔁 Update CID</h3>
+            <h3 class="dns-card-title">Update CID</h3>
             <div class="dns-form">
               <input type="text" id="updateDomainInput"
                 placeholder="yourdomain.eth/.ddns" class="dns-input" />
@@ -262,7 +262,7 @@
 
           <!-- Transfer Ownership -->
           <div class="dns-card">
-            <h3 class="dns-card-title">🔄 Transfer Domain</h3>
+            <h3 class="dns-card-title">Transfer Domain</h3>
             <div class="dns-form">
               <input type="text" id="transferDomainInput"
                 placeholder="yourdomain.eth/.ddns" class="dns-input" />
@@ -274,10 +274,20 @@
             </div>
           </div>
         </div>
+        <!-- Search Domains by Owner -->
+        <div class="dns-card">
+          <h3 class="dns-card-title">Search Domains by Owner</h3>
+           <div class="dns-form">
+             <input type="text" id="searchOwnerInput" placeholder="Enter Owner Address" class="dns-input" />
+             <button id="searchOwnerBtn" class="btn btn-primary">Search Domains</button>
+             <p id="searchOwnerStatus" class="dns-status"></p>
+           </div>
+        </div>
+
 
         <!-- Domain List -->
-        <div class="domain-list-section">
-          <h3 class="section-title">📋 All Registered Domains</h3>
+        <div class="domain-list-section" style="text-align: center;">
+          <h4 class="section-title" style="font-size: 200%;">All Registered Domains</h4>
           <p id="domainListStatus"></p> <!-- ✅ Add this -->
           <div class="table-container">
             <table class="domains-table">
@@ -327,10 +337,8 @@
             <span class="footer-title">Decentralized DNS</span>
           </div>
           <div class="footer-links-row">
-            <a href="#" class="footer-link">Product</a>
             <a href="#features" class="footer-link">Features</a>
             <a href="#technology" class="footer-link">Technology</a>
-            <a href="#" class="footer-link">Pricing</a>
           </div>
         </div>
       </div>

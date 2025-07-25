@@ -34,10 +34,10 @@
 
 
 ````
-2. **Install dependencies**
+2. Install dependencies
 ```shell
 npm install
-# or
+ or
 yarn install
 ````
 
@@ -50,7 +50,7 @@ export PINATA\_API\_KEY="\<YOUR\_PINATA\_API\_KEY>"
 export PINATA\_SECRET\_API\_KEY="\<YOUR\_PINATA\_SECRET\_API\_KEY>"
 
 ````
-4. **Configure contract connection**
+4. Configure contract connection
 In `contract.js`:
 ```js
 const rpcEndpoint = "http://127.0.0.1:7545";
@@ -68,13 +68,13 @@ Then open your browser to `http://localhost:8080`.
 ### Usage
 
 ```shell
-# 1. Register a domain and pin content via Pinata SDK
+1. Register a domain and pin content via Pinata SDK
 node register.js <domain> <path-to-site>
 
-# 2. Resolve a domain and get IPFS hash
+2. Resolve a domain and get IPFS hash
 node resolve.js <domain>
 
-# 3. Update a domain with new content
+3. Update a domain with new content
 node update.js <domain> <path-to-new-site>
 ```
 

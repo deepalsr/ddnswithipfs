@@ -27,7 +27,7 @@ document.getElementById('connectWallet').onclick = async () => {
   signer = provider.getSigner();
   const address = await signer.getAddress();
 
-  
+
   const message = "Log in to Decentralized DNS";
   const signature = await signer.signMessage(message);
   const recoveredAddress = ethers.utils.verifyMessage(message, signature);
@@ -37,7 +37,7 @@ document.getElementById('connectWallet').onclick = async () => {
     return;
   }
 
-  
+
   localStorage.setItem("userAddress", address);
   document.getElementById('walletAddress').innerText = 'Connected: ' + address;
 
@@ -202,7 +202,7 @@ document.getElementById('resolveBtn').onclick = async () => {
     iframe.style.border = '1px solid #e2e8f0';
     iframe.style.borderRadius = '8px';
     iframe.srcdoc = html;
-    
+
     // Prevent iframe from navigating parent window
     iframe.onload = () => {
       try {
@@ -212,7 +212,7 @@ document.getElementById('resolveBtn').onclick = async () => {
         // Ignore cross-origin errors
       }
     };
-    
+
     miniBrowser.appendChild(iframe);
 
     statusEl.textContent = '✅ Site loaded from IPFS';
@@ -226,7 +226,7 @@ document.getElementById('resolveBtn').onclick = async () => {
 // Check Ownership
 document.getElementById('checkOwnershipBtn').onclick = async () => {
   const domain = document.getElementById('ownershipInput').value.trim();
-  
+
   if (!domain) {
     alert("Please enter a domain name");
     return;
@@ -242,7 +242,7 @@ document.getElementById('checkOwnershipBtn').onclick = async () => {
     const currentUser = await signer.getAddress();
     const isOwner = owner.toLowerCase() === currentUser.toLowerCase();
 
-    document.getElementById('ownershipStatus').innerText = 
+    document.getElementById('ownershipStatus').innerText =
       `Owner: ${owner} ${isOwner ? '(You own this domain)' : ''}`;
   } catch (error) {
     console.error(error);
@@ -291,6 +291,66 @@ document.getElementById('transferDomainBtn').onclick = async () => {
   }
 };
 
+
+// 🔍 Search domains by owner address using GraphQL
+document.getElementById('searchOwnerBtn').onclick = async () => {
+  const inputAddress = document.getElementById('searchOwnerInput').value.trim();
+  const tableBody = document.getElementById('domainsTable');
+  const status = document.getElementById('searchOwnerStatus');
+
+  if (!inputAddress || !ethers.utils.isAddress(inputAddress)) {
+    status.textContent = "Please enter a valid Ethereum address.";
+    return;
+  }
+
+  status.textContent = "Searching...";
+  try {
+    const query = `
+      query($owner: String!) {
+        getDomainsByOwner(owner: $owner) {
+          name
+          owner
+          cid
+        }
+      }
+    `;
+
+    const res = await fetch("http://localhost:4000/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query,
+        variables: { owner: inputAddress }
+      })
+    });
+
+    const result = await res.json();
+    const domains = result.data?.getDomainsByOwner || [];
+
+    tableBody.innerHTML = "";
+
+    if (domains.length === 0) {
+      status.textContent = "No domains found for this address.";
+    } else {
+      domains.forEach(domain => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${domain.name}</td>
+          <td>${domain.owner}</td>
+          <td>${domain.cid}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+      status.textContent = `✅ Found ${domains.length} domain(s).`;
+    }
+  } catch (error) {
+    console.error("Search error:", error);
+    status.textContent = "❌ Error searching domains.";
+  }
+};
+
+
+
 // Update domain list UI table
 function updateDomainListUI() {
   const tbody = document.getElementById('domainsTable');
@@ -302,7 +362,7 @@ function updateDomainListUI() {
     const nameCell = document.createElement('td');
     nameCell.innerText = domain.name;
     row.appendChild(nameCell);
-    
+
     const ownerCell = document.createElement('td');
     ownerCell.innerText = domain.owner;
     row.appendChild(ownerCell);
