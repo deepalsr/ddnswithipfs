@@ -296,6 +296,10 @@ function updateDomainListUI() {
     const nameCell = document.createElement('td');
     nameCell.innerText = domain.name;
     row.appendChild(nameCell);
+    
+    const ownerCell = document.createElement('td');
+    ownerCell.innerText = domain.owner;
+    row.appendChild(ownerCell);
 
     const cidCell = document.createElement('td');
     cidCell.innerText = domain.cid;
@@ -307,18 +311,37 @@ function updateDomainListUI() {
 
 // Load past registered domains by querying past events
 async function loadPastDomains() {
+  const status = document.getElementById("domainListStatus");
+  status.textContent = "⏳ Fetching registered domains...";
+
   try {
-    const filter = contract.filters.DomainRegistered();
-    const events = await contract.queryFilter(filter, 0, "latest");
+    const query = `
+      query {
+        getAllDomains {
+          name
+          owner
+          cid
+        }
+      }
+    `;
 
-    domainList = events.map(event => ({
-      name: event.args.name,
-      owner: event.args.owner,
-      cid: event.args.cid
-    }));
+    const res = await fetch("http://localhost:4000/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
+    });
 
+    const result = await res.json();
+    const domains = result.data?.getAllDomains || [];
+
+    domainList = domains;
     updateDomainListUI();
+
+    status.textContent = domains.length === 0
+      ? "No domains registered yet."
+      : `✅ ${domains.length} domain(s) loaded.`;
   } catch (error) {
-    console.error("Failed to load past domains:", error);
+    console.error("Error loading domains from GraphQL:", error);
+    status.textContent = "❌ Failed to load domains.";
   }
 }
